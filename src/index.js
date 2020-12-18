@@ -7,7 +7,6 @@ if (!db)
     if (!fs.existsSync('./data')) {
       fs.mkdirSync('./data');
     }
-  }
 db = new Database("./data/db.sqlite");
 
 var methods = {
@@ -22,13 +21,7 @@ var methods = {
     type: require("./methods/type"),
 };
 
-module.exports = {
-    Base: require("./structures/Base"),
-    Database: require("./structures/Main"),
-    MongoError: require("./structures/Error"),
-    Schema: require("./structures/Schema"),
-    Util: require("./structures/Util"),
-};
+
 module.exports = {
     version: require("../package.json").version,
 

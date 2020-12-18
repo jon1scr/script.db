@@ -1,7 +1,7 @@
 {
   "name": "script.db",
-  "version": "2.0.1",
-  "description": "SQlite3/MongoDB storage engine for Node.JS",
+  "version": "2.0.5",
+  "description": "SQlite3 storage engine for Node.JS",
   "main": "./src/index.js",
   "scripts": {
     "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
@@ -16,7 +16,6 @@
     "database",
     "storing",
     "easy",
-    "MongoDB",
     "SQlite3"
   ],
   "author": "Hiekki Studio",
@@ -27,7 +26,6 @@
   "homepage": "https://script.db.hiekki.gq",
   "dependencies": {
     "better-sqlite3": "^7.1.1",
-    "lodash": "^4.17.19",
-    "mongoose": "^5.11.7"
-  }
+    "lodash": "^4.17.19"
+    }
 }
