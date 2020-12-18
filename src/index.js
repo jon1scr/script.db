@@ -1,160 +1,379 @@
+const Database = require("better-sqlite3");
 const fs = require("fs");
+let db;
 
-/**
- * @type {{asyncWrite: boolean, syncOnWrite: boolean, jsonSpaces: number}}
- */
 
-const defaultOptions = {
-  asyncWrite: false,
-  syncOnWrite: true,
-  jsonSpaces: 4
+if (!db) 
+    if (!fs.existsSync('./data')) {
+      fs.mkdirSync('./data');
+    }
+  }
+db = new Database("./data/db.sqlite");
+
+var methods = {
+    fetch: require("./methods/fetch.js"),
+    set: require("./methods/set.js"),
+    add: require("./methods/add.js"),
+    subtract: require("./methods/subtract.js"),
+    push: require("./methods/push.js"),
+    delete: require("./methods/delete.js"),
+    has: require("./methods/has.js"),
+    all: require("./methods/all.js"),
+    type: require("./methods/type"),
 };
 
-/**
- * @param {string} fileContent
- * @returns {boolean}
- */
-let validateJSON = function(fileContent) {
-  try {
-    JSON.parse(fileContent);
-  } catch (e) {
-    throw new Error('Given filePath is not empty and its content is not valid JSON.');
-  }
-  return true;
+module.exports = {
+    Base: require("./structures/Base"),
+    Database: require("./structures/Main"),
+    MongoError: require("./structures/Error"),
+    Schema: require("./structures/Schema"),
+    Util: require("./structures/Util"),
+};
+module.exports = {
+    version: require("../package.json").version,
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {data}
+     */
+
+    fetch: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("fetch", { id: key, ops: ops || {} });
+    },
+    get: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("fetch", { id: key, ops: ops || {} });
+    },
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {data}
+     */
+
+    set: function (key, value, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        if (value === undefined)
+            throw new TypeError(
+                "No value specified."
+            );
+        return arbitrate("set", {
+            stringify: true,
+            id: key,
+            data: value,
+            ops: ops || {},
+        });
+    },
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {data} the updated data.
+     */
+
+    add: function (key, value, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        if (isNaN(value))
+            throw new TypeError(
+                "Must specify value to add."
+            );
+        return arbitrate("add", { id: key, data: value, ops: ops || {} });
+    },
+
+    /**
+     * @param {key} input 
+     * @param {options} [input={ target: null }] 
+     * @returns {data}
+     */
+
+    subtract: function (key, value, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        if (isNaN(value))
+            throw new TypeError(
+                "Must specify value to add."
+            );
+        return arbitrate("subtract", { id: key, data: value, ops: ops || {} });
+    },
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {data} 
+     */
+
+    push: function (key, value, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        if (!value && value != 0)
+            throw new TypeError(
+                "Must specify value to push."
+            );
+        return arbitrate("push", {
+            stringify: true,
+            id: key,
+            data: value,
+            ops: ops || {},
+        });
+    },
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {boolean}
+     */
+
+    delete: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("delete", { id: key, ops: ops || {} });
+    },
+
+    /**
+     * @param {key} input
+     * @param {options} [input={ target: null }]
+     * @returns {boolean}
+     */
+
+    has: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("has", { id: key, ops: ops || {} });
+    },
+
+    includes: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("has", { id: key, ops: ops || {} });
+    },
+
+    /**
+     * @param {options} [input={ target: null }]
+     * @returns {boolean}
+     */
+
+    all: function (ops) {
+        return arbitrate("all", { ops: ops || {} });
+    },
+
+    fetchAll: function (ops) {
+        return arbitrate("all", { ops: ops || {} });
+    },
+
+    type: function (key, ops) {
+        if (!key)
+            throw new TypeError(
+                "No key specified."
+            );
+        return arbitrate("type", { id: key, ops: ops || {} });
+    },
+
+    /**
+     * @param {name} input
+     * @param {options} options.
+     */
+
+    table: function (tableName, options = {}) {
+        // Set Name
+        if (typeof tableName !== "string")
+            throw new TypeError(
+                "Table name has to be a string."
+            );
+        else if (tableName.includes(" "))
+            throw new TypeError(
+                "Table name cannot include spaces."
+            );
+        this.tableName = tableName;
+
+        this.fetch = function (key, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            return arbitrate(
+                "fetch",
+                { id: key, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.get = function (key, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            return arbitrate(
+                "fetch",
+                { id: key, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.set = function (key, value, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            if (!value && value != 0)
+                throw new TypeError(
+                    "No value specified."
+                );
+            return arbitrate(
+                "set",
+                { stringify: true, id: key, data: value, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.add = function (key, value, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            if (isNaN(value))
+                throw new TypeError(
+                    "Must specify value to add."
+                );
+            return arbitrate(
+                "add",
+                { id: key, data: value, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.subtract = function (key, value, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            if (isNaN(value))
+                throw new TypeError(
+                    "Must specify value to add."
+                );
+            return arbitrate(
+                "subtract",
+                { id: key, data: value, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.push = function (key, value, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            if (!value && value != 0)
+                throw new TypeError(
+                    "Must specify value to push."
+                );
+            return arbitrate(
+                "push",
+                { stringify: true, id: key, data: value, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.delete = function (key, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            return arbitrate(
+                "delete",
+                { id: key, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.has = function (key, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            return arbitrate(
+                "has",
+                { id: key, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.includes = function (key, ops) {
+            if (!key)
+                throw new TypeError(
+                    "No key specified."
+                );
+            return arbitrate(
+                "has",
+                { id: key, ops: ops || {} },
+                this.tableName
+            );
+        };
+
+        this.fetchAll = function (ops) {
+            return arbitrate("all", { ops: ops || {} }, this.tableName);
+        };
+
+        this.all = function (ops) {
+            return arbitrate("all", { ops: ops || {} }, this.tableName);
+        };
+    },
 };
 
-/**
- * @param {string} filePath 
- * @param {object} [options]
- * @param {boolean} [options.asyncWrite]
- * @param {boolean} [options.syncOnWrite]
- * @param {boolean} [options.syncOnWrite]
- * @param {number} [options.jsonSpaces]
- * @constructor
- */
-function JSONdb(filePath, options) {
-  if (!filePath || !filePath.length) {
-    throw new Error('Missing file path argument.');
-  } else {
-    this.filePath = filePath;
-  }
+function arbitrate(method, params, tableName) {
+    let options = {
+        table: tableName || params.ops.table || "json",
+    };
 
-  if (options) {
-    for (let key in defaultOptions) {
-      if (!options.hasOwnProperty(key)) options[key] = defaultOptions[key];
-    }
-    this.options = options;
-  } else {
-    this.options = defaultOptions;
-  }
+    db.prepare(
+        `CREATE TABLE IF NOT EXISTS ${options.table} (ID TEXT, json TEXT)`
+    ).run();
 
-  this.storage = {};
+    if (params.ops.target && params.ops.target[0] === ".")
+        params.ops.target = params.ops.target.slice(1);
+    if (params.data && params.data === Infinity)
+        throw new TypeError(
+            `You cannot set Infinity into the database ID: ${params.id}`
+        );
 
-  let stats;
-  try {
-    stats = fs.statSync(filePath);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return;
-    } else if (err.code === 'EACCES') {
-      throw new Error(`Cannot access path "${filePath}".`);
-    } else {
-      throw new Error(`Error while checking for existence of path "${filePath}": ${err}`);
+    if (params.stringify) {
+        try {
+            params.data = JSON.stringify(params.data);
+        } catch (e) {
+            throw new TypeError(
+                `Please supply a valid input ID: ${params.id}\nError: ${e.message}`
+            );
+        }
     }
-  }
-  try {
-    fs.accessSync(filePath, fs.constants.R_OK | fs.constants.W_OK);
-  } catch (err) {
-    throw new Error(`Cannot read & write on path "${filePath}". Check permissions!`);
-  }
-  if (stats.size > 0) {
-    let data;
-    try {
-      data = fs.readFileSync(filePath);
-    } catch (err) {
-      throw err; 
+
+    if (params.id && params.id.includes(".")) {
+        let unparsed = params.id.split(".");
+        params.id = unparsed.shift();
+        params.ops.target = unparsed.join(".");
     }
-    if (validateJSON(data)) this.storage = JSON.parse(data);
-  }
+
+    return methods[method](db, params, options);
 }
-
-/**
- * @param {string} key
- * @param {object} value
- */
-JSONdb.prototype.set = function(key, value) {
-  this.storage[key] = value;
-  if (this.options && this.options.syncOnWrite) this.sync();
-};
-
-/**
- * @param {string} key 
- * @returns {object|undefined} 
- */
-JSONdb.prototype.get = function(key) {
-  return this.storage.hasOwnProperty(key) ? this.storage[key] : undefined;
-};
-
-/**
- * @param {string} key 
- * @returns {boolean} 
- */
-JSONdb.prototype.has = function(key) {
-  return this.storage.hasOwnProperty(key);
-};
-
-/**
- * @param {string} key
- * @returns {boolean|undefined}
- */
-JSONdb.prototype.delete = function(key) {
-  let retVal = this.storage.hasOwnProperty(key) ? delete this.storage[key] : undefined;
-  if (this.options && this.options.syncOnWrite) this.sync();
-  return retVal;
-};
-
-/**
- * @returns {object}
- */
-JSONdb.prototype.deleteAll = function() {
-  for (var key in this.storage) {
-    this.delete(key);
-  }
-  return this;
-};
-
-JSONdb.prototype.sync = function() {
-  if (this.options && this.options.asyncWrite) {
-    fs.writeFile(this.filePath, JSON.stringify(this.storage, null, this.options.jsonSpaces), (err) => {
-      if (err) throw err;
-    });
-  } else {
-    try {
-      fs.writeFileSync(this.filePath, JSON.stringify(this.storage, null, this.options.jsonSpaces));
-    } catch (err) {
-      if (err.code === 'EACCES') {
-        throw new Error(`Cannot access path "${this.filePath}".`);
-      } else {
-        throw new Error(`Error while writing to path "${this.filePath}": ${err}`);
-      }
-    }
-  }
-};
-
-/**
- * @param {object} storage
- * @returns {object}
- */
-JSONdb.prototype.JSON = function(storage) {
-  if (storage) {
-    try {
-      JSON.parse(JSON.stringify(storage));
-      this.storage = storage;
-    } catch (err) {
-      throw new Error('Given parameter is not a valid JSON object.');
-    }
-  }
-  return JSON.parse(JSON.stringify(this.storage));
-};
-
-module.exports = JSONdb;

@@ -1,32 +1,33 @@
 {
-    "name": "script.db",
-    "version": "1.0.0",
-    "description": "JSON storage engine for Node.JS",
-    "main": "./src/index.js",
-    "scripts": {
-        "test": "node spec/test.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/HiekkiStudio/script.db.git"
-    },
-    "keywords": [
-        "database",
-        "storing",
-        "easy",
-        "json"
-    ],
-    "author": "Hiekki Studio",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/HiekkiStudio/script.db/issues"
-    },
-    "homepage": "script.db.hiekki.gq",
-    "dependencies": {
-
-    },
-    "devDependencies": {
-        "chai": "4.2.0",
-        "mocha": "7.0.0"
-      }
+  "name": "script.db",
+  "version": "2.0.1",
+  "description": "SQlite3/MongoDB storage engine for Node.JS",
+  "main": "./src/index.js",
+  "scripts": {
+    "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
+    "docs:test": "docgen --source src --custom docs/index.yml",
+    "test": "node spec/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HiekkiStudio/script.db.git"
+  },
+  "keywords": [
+    "database",
+    "storing",
+    "easy",
+    "MongoDB",
+    "SQlite3"
+  ],
+  "author": "Hiekki Studio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HiekkiStudio/script.db/issues"
+  },
+  "homepage": "https://script.db.hiekki.gq",
+  "dependencies": {
+    "better-sqlite3": "^7.1.1",
+    "lodash": "^4.17.19",
+    "mongoose": "^5.11.7"
+  }
 }
