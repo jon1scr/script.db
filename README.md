@@ -4,7 +4,7 @@ Powerful Database framework for discord bots.
 
 <a href="https://www.npmjs.com/package/script.db"><img src="https://img.shields.io/npm/v/script.db.svg?maxAge=3600" /></a> <a href="https://discord.gg/4dSNfBhgMR"><img src="https://img.shields.io/discord/752215842959130655?color=7289da&logo=discord&logoColor=white" /></a>
 
-https://nodei.co/npm/script.db.png?downloads=true&stars=true
+![Script.db](https://nodei.co/npm/script.db.png)
 
 ## Installing
 
@@ -14,11 +14,12 @@ $ npm i --save script.db
 
 ## Links
 
-[Documentation](https://script.db.hiekki.gq)
-[Discord Support Server](https://discord.gg/4dSNfBhgMR)
-[NPM](https://npmjs.com/package/script.db)
+- **[Documentation](https://script.db.hiekki.gq)**
+- **[Discord Support Server](https://discord.gg/4dSNfBhgMR)**
+- **[NPM](https://npmjs.com/package/script.db)**
 
 ## Getting Started
+
 ```js
 const db = require('script.db');
 
@@ -68,6 +69,10 @@ client.login("XXXXXXXXXXXXXX");
 ```
 
 ## MongoDB Module
+
+```bash
+npm i --sava script.db-mongo
+```
 
 ```js
 const Discord = require("discord.js");
