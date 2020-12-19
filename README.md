@@ -18,23 +18,6 @@ $ npm i --save script.db
 - [Discord Support Server](https://discord.gg/4dSNfBhgMR)
 - [NPM](https://npmjs.com/package/script.db)
 
-## Getting Started
-
-```js
-const db = require('script.db');
-
-// Setting an object in the database:
-db.set(`money_${message.guild.id}_${user.id}`)
-
-// Pushing an element to an array (that doesn't exist yet) in an object:
-db.push(`money_${message.guild.id}_${user.id}`)
-
-// Adding to a number (that doesn't exist yet) in an object:
-db.add(`money_${message.guild.id}_${user.id}`, "1000")
-
-// Fetching individual properties
-db.get(`money_${message.guild.id}_${user.id}`)
-```
 ## Example
 
 ```js
